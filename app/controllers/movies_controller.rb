@@ -21,9 +21,9 @@ class MoviesController < ApplicationController
       @movies = Movie.all
     end
 
-    if !params[:ratings_].nil?
-      @movies = Movie.where(rating: params[:ratings_].keys)
-      @selected_ratings = params[:ratings_]
+    if !params[:ratings].nil?
+      @movies = Movie.where(rating: params[:ratings].keys)
+      @selected_ratings = params[:ratings]
     else
       @selected_ratings = Movie.getAllRatings
     end
