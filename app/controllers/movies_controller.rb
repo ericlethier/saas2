@@ -8,35 +8,65 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def index
-    #debugger
-    if params[:sort] == 'title'
-      @sort='title'
-      @movies = Movie.all(:order => "title ASC")
-    elsif params[:sort] == 'date'
-      @sort='date'
-      @movies = Movie.all(:order => "release_date ASC")
-    else
-      @sort='none'
-      @movies = Movie.all
+  def restore_session
+    missing_params = 0
+
+    if !params[:sort].nil?
+      if params[:sort] == 'title'
+        session[:sort]='title'
+      elsif params[:sort] == 'date'
+        session[:sort]='date'
+      end
     end
 
     if !params[:ratings].nil?
-      if params[:sort] == 'title'
-        @movies = Movie.where(rating: params[:ratings].keys).order("title ASC")
-      elsif params[:sort] == 'date'
-        @movies = Movie.where(rating: params[:ratings].keys).order("release_date ASC")
-      else
-        @movies = Movie.where(rating: params[:ratings].keys)
-      end
-      @selected_ratings = params[:ratings]
-    else
-      @selected_ratings = Movie.getAllRatings
+      session[:ratings] = params[:ratings]
     end
 
-    @all_ratings = Movie.getAllRatings
+    if params[:sort].nil? && !session[:sort].nil?
+      # debugger
+      missing_params = 1
+    end
+    if params[:ratings].nil? && !session[:ratings].nil?
+      # debugger
+      missing_params = 1
+    end
 
-    #debugger
+    if !session[:ratings].nil?
+      @selected_ratings = session[:ratings]
+      if session[:sort] == 'title'
+        @sort = 'title'
+        @movies = Movie.where(rating: session[:ratings].keys).order("title ASC")
+      elsif session[:sort] == 'date'
+        @sort = 'date'
+        @movies = Movie.where(rating: session[:ratings].keys).order("release_date ASC")
+      else
+        @movies = Movie.where(rating: session[:ratings].keys)
+      end
+    elsif session[:sort] == 'title'
+      @sort = 'title'
+      @movies = Movie.all(:order => "title ASC")
+    elsif session[:sort] == 'date'
+      @sort = 'date'
+      @movies = Movie.all(:order => "release_date ASC")
+    else
+      @movies = Movie.all
+    end
+
+    if missing_params == 10
+      flash.keep
+      redirect_to action: index, sort: @sort, ratings: session[:ratings]
+    end
+
+  end
+
+
+  def index
+#    session.clear
+    @selected_ratings = Movie.getAllRatings
+    @all_ratings = Movie.getAllRatings
+    restore_session
+#    debugger
   end
 
   def new
