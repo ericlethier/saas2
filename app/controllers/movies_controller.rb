@@ -22,19 +22,21 @@ class MoviesController < ApplicationController
     end
 
     if !params[:ratings].nil?
-      @movies = Movie.where(rating: params[:ratings].keys)
+      if params[:sort] == 'title'
+        @movies = Movie.where(rating: params[:ratings].keys).order("title ASC")
+      elsif params[:sort] == 'date'
+        @movies = Movie.where(rating: params[:ratings].keys).order("release_date ASC")
+      else
+        @movies = Movie.where(rating: params[:ratings].keys)
+      end
       @selected_ratings = params[:ratings]
     else
       @selected_ratings = Movie.getAllRatings
     end
 
-      @all_ratings = Movie.getAllRatings
-
+    @all_ratings = Movie.getAllRatings
 
     #debugger
-
-
-
   end
 
   def new
