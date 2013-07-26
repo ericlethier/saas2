@@ -1,6 +1,6 @@
 class MoviesController < ApplicationController
 
-  attr_accessor :sort, :all_ratings
+  attr_accessor :sort, :all_ratings, :selected_ratings
 
   def show
     id = params[:id] # retrieve movie ID from URI route
@@ -21,12 +21,19 @@ class MoviesController < ApplicationController
       @movies = Movie.all
     end
 
-    if !params[:ratings].nil?
-      @movies = Movie.where(rating: params[:ratings].keys)
+    if !params[:ratings_].nil?
+      @movies = Movie.where(rating: params[:ratings_].keys)
+      @selected_ratings = params[:ratings_]
+    else
+      @selected_ratings = Movie.getAllRatings
     end
 
+      @all_ratings = Movie.getAllRatings
+
+
     #debugger
-    @all_ratings = Movie.getAllRatings
+
+
 
   end
 
