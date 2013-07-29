@@ -24,11 +24,9 @@ class MoviesController < ApplicationController
     end
 
     if params[:sort].nil? && !session[:sort].nil?
-      # debugger
       missing_params = 1
     end
     if params[:ratings].nil? && !session[:ratings].nil?
-      # debugger
       missing_params = 1
     end
 
@@ -53,20 +51,18 @@ class MoviesController < ApplicationController
       @movies = Movie.all
     end
 
-    if missing_params == 10
+    if missing_params == 1
       flash.keep
-      redirect_to action: index, sort: @sort, ratings: session[:ratings]
+      redirect_to action: 'index', sort: @sort, ratings: @selected_ratings
     end
 
   end
 
 
   def index
-#    session.clear
     @selected_ratings = Movie.getAllRatings
     @all_ratings = Movie.getAllRatings
     restore_session
-#    debugger
   end
 
   def new
